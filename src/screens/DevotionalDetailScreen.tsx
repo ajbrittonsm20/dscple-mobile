@@ -101,7 +101,9 @@ export default function DevotionalDetailScreen({ route, navigation }: any) {
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>Scripture</Text>
           <Text style={styles.scriptureRef}>{devotional.scripture_reference}</Text>
-          <Text style={styles.scriptureText}>"{devotional.scripture_text}"</Text>
+          {devotional.scripture_text && (
+            <Text style={styles.scriptureText}>"{devotional.scripture_text}"</Text>
+          )}
         </View>
 
         {/* Reflection */}
