@@ -47,7 +47,7 @@ export default function MissionScreen({ navigation }: any) {
             </View>
 
             {missionaryList.map((m: any) => (
-              <View key={m.id} style={styles.personCard}>
+              <TouchableOpacity key={m.id} style={styles.personCard} activeOpacity={0.7} onPress={() => navigation.navigate('MissionaryDetail', { id: m.id })}>
                 {m.image_url ? (
                   <Image source={{ uri: m.image_url }} style={styles.personImage} contentFit="cover" />
                 ) : (
@@ -60,7 +60,8 @@ export default function MissionScreen({ navigation }: any) {
                   {m.location && <Text style={styles.personLocation}>{m.location}</Text>}
                   {m.description && <Text style={styles.personDesc} numberOfLines={2}>{m.description}</Text>}
                 </View>
-              </View>
+                <Ionicons name="chevron-forward" size={18} color={colors.mutedForeground} />
+              </TouchableOpacity>
             ))}
 
             {/* Non Profits */}
@@ -68,7 +69,7 @@ export default function MissionScreen({ navigation }: any) {
               <>
                 <Text style={[styles.sectionTitle, { paddingHorizontal: spacing.lg, marginTop: spacing.lg }]}>Non Profits</Text>
                 {nonprofitList.map((m: any) => (
-                  <View key={m.id} style={styles.personCard}>
+                  <TouchableOpacity key={m.id} style={styles.personCard} activeOpacity={0.7} onPress={() => navigation.navigate('MissionaryDetail', { id: m.id })}>
                     {m.image_url ? (
                       <Image source={{ uri: m.image_url }} style={styles.personImage} contentFit="cover" />
                     ) : (
@@ -80,7 +81,8 @@ export default function MissionScreen({ navigation }: any) {
                       <Text style={styles.personName}>{m.name}</Text>
                       {m.location && <Text style={styles.personLocation}>{m.location}</Text>}
                     </View>
-                  </View>
+                    <Ionicons name="chevron-forward" size={18} color={colors.mutedForeground} />
+                  </TouchableOpacity>
                 ))}
               </>
             )}
