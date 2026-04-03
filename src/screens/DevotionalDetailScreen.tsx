@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Share, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +19,21 @@ export default function DevotionalDetailScreen({ route, navigation }: any) {
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+
+  // Render text with **bold** markdown support
+  const renderFormattedText = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return (
+      <Text style={styles.bodyText}>
+        {parts.map((part, i) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <Text key={i} style={styles.boldText}>{part.slice(2, -2)}</Text>;
+          }
+          return part;
+        })}
+      </Text>
+    );
+  };
 
   const imageUri = devotional.image_url || categoryImages[devotional.category] || categoryImages.faith;
   const dateStr = format(new Date(devotional.date), 'MMMM d, yyyy');
@@ -110,7 +125,7 @@ export default function DevotionalDetailScreen({ route, navigation }: any) {
         {devotional.reflection && (
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>Reflection</Text>
-            <Text style={styles.bodyText}>{devotional.reflection}</Text>
+            {renderFormattedText(devotional.reflection)}
           </View>
         )}
 
@@ -118,7 +133,7 @@ export default function DevotionalDetailScreen({ route, navigation }: any) {
         {devotional.prayer && (
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>Prayer</Text>
-            <Text style={styles.bodyText}>{devotional.prayer}</Text>
+            {renderFormattedText(devotional.prayer)}
           </View>
         )}
 
@@ -146,4 +161,5 @@ const styles = StyleSheet.create({
   scriptureRef: { fontFamily: fonts.semibold, fontSize: fontSize.lg, color: colors.foreground, marginBottom: spacing.sm },
   scriptureText: { fontFamily: fonts.regular, fontSize: fontSize.base, color: colors.foreground, fontStyle: 'italic', lineHeight: 26 },
   bodyText: { fontFamily: fonts.regular, fontSize: fontSize.base, color: colors.foreground, lineHeight: 26 },
+  boldText: { fontFamily: fonts.bold, fontSize: fontSize.base, color: colors.foreground },
 });
