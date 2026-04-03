@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';
+import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../providers/AuthProvider';
 import { colors, fonts, spacing, borderRadius, fontSize } from '../lib/theme';
@@ -60,8 +61,7 @@ export default function DonateScreen({ navigation }: any) {
         throw new Error(data?.error || 'Failed to create payment');
       }
 
-      // TODO: Present Stripe Payment Sheet with clientSecret
-      // For now, create donation record directly (test mode)
+      // Record the donation with the payment intent ID
       await supabase.from('donations').insert({
         user_id: user?.id,
         amount: parseFloat(amount),
@@ -69,6 +69,7 @@ export default function DonateScreen({ navigation }: any) {
         donor_name: isAnonymous ? '' : donorName,
         is_anonymous: isAnonymous,
         message,
+        stripe_payment_intent_id: data.clientSecret.split('_secret_')[0],
       });
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
