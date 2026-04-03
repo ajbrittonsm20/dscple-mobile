@@ -3,14 +3,19 @@ import { View, Text, TextInput, FlatList, TouchableOpacity, ScrollView, StyleShe
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
+import { format, parseISO } from 'date-fns';
 import { supabase } from '../lib/supabase';
 import { colors, fonts, spacing, borderRadius, fontSize } from '../lib/theme';
-import { CATEGORIES } from '../lib/constants';
 import DevotionalCard from '../components/DevotionalCard';
+
+const MONTHS = [
+  'all', 'january', 'february', 'march', 'april', 'may', 'june',
+  'july', 'august', 'september', 'october', 'november', 'december',
+] as const;
 
 export default function DevotionalsScreen({ navigation }: any) {
   const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [activeMonth, setActiveMonth] = useState<string>('all');
 
   const { data: devotionals = [], isLoading } = useQuery({
     queryKey: ['devotionals'],
@@ -26,8 +31,12 @@ export default function DevotionalsScreen({ navigation }: any) {
 
   const filtered = useMemo(() => {
     let result = devotionals;
-    if (activeCategory !== 'all') {
-      result = result.filter((d: any) => d.category === activeCategory);
+    if (activeMonth !== 'all') {
+      const monthIndex = MONTHS.indexOf(activeMonth as any);
+      result = result.filter((d: any) => {
+        const date = new Date(d.date);
+        return date.getMonth() + 1 === monthIndex;
+      });
     }
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -36,7 +45,7 @@ export default function DevotionalsScreen({ navigation }: any) {
       );
     }
     return result;
-  }, [devotionals, activeCategory, search]);
+  }, [devotionals, activeMonth, search]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -54,16 +63,16 @@ export default function DevotionalsScreen({ navigation }: any) {
         />
       </View>
 
-      {/* Category Pills */}
+      {/* Month Pills */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.pillsContainer} contentContainerStyle={styles.pillsContent}>
-        {CATEGORIES.map((cat) => (
+        {MONTHS.map((month) => (
           <TouchableOpacity
-            key={cat}
-            style={[styles.pill, activeCategory === cat && styles.pillActive]}
-            onPress={() => setActiveCategory(cat)}
+            key={month}
+            style={[styles.pill, activeMonth === month && styles.pillActive]}
+            onPress={() => setActiveMonth(month)}
           >
-            <Text style={[styles.pillText, activeCategory === cat && styles.pillTextActive]}>
-              {cat === 'all' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+            <Text style={[styles.pillText, activeMonth === month && styles.pillTextActive]}>
+              {month === 'all' ? 'All' : month.charAt(0).toUpperCase() + month.slice(1, 3)}
             </Text>
           </TouchableOpacity>
         ))}
