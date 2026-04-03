@@ -11,6 +11,7 @@ import DevotionalDetailScreen from '../screens/DevotionalDetailScreen';
 import SavedScreen from '../screens/SavedScreen';
 import MissionScreen from '../screens/MissionScreen';
 import MissionaryMapScreen from '../screens/MissionaryMapScreen';
+import MissionaryDetailScreen from '../screens/MissionaryDetailScreen';
 import PrayerRequestScreen from '../screens/PrayerRequestScreen';
 import DonateScreen from '../screens/DonateScreen';
 import PricingScreen from '../screens/PricingScreen';
@@ -47,6 +48,7 @@ function MissionStackScreen() {
     <MissionStack.Navigator screenOptions={{ headerShown: false }}>
       <MissionStack.Screen name="MissionMain" component={MissionScreen} />
       <MissionStack.Screen name="MissionaryMap" component={MissionaryMapScreen} />
+      <MissionStack.Screen name="MissionaryDetail" component={MissionaryDetailScreen} />
     </MissionStack.Navigator>
   );
 }
