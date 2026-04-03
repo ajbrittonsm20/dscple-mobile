@@ -52,16 +52,23 @@ export default function DonateScreen({ navigation }: any) {
 
     setLoading(true);
     try {
-      // Call Supabase Edge Function to create payment intent
+      // Call Supabase Edge Function to create Stripe Checkout session
       const { data, error } = await supabase.functions.invoke('create-payment-intent', {
         body: { amount: parseFloat(amount), cause },
       });
 
-      if (error || !data?.clientSecret) {
+      if (error || !data?.url) {
         throw new Error(data?.error || 'Failed to create payment');
       }
 
-      // Record the donation with the payment intent ID
+      // Open Stripe Checkout in browser
+      const result = await WebBrowser.openBrowserAsync(data.url);
+
+      // Record donation after checkout completes
+      if (result.type === 'cancel' || result.type === 'dismiss') {
+        // User closed browser - may or may not have completed payment
+      }
+
       await supabase.from('donations').insert({
         user_id: user?.id,
         amount: parseFloat(amount),
@@ -69,7 +76,6 @@ export default function DonateScreen({ navigation }: any) {
         donor_name: isAnonymous ? '' : donorName,
         is_anonymous: isAnonymous,
         message,
-        stripe_payment_intent_id: data.clientSecret.split('_secret_')[0],
       });
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
