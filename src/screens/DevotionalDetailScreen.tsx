@@ -117,7 +117,9 @@ export default function DevotionalDetailScreen({ route, navigation }: any) {
           <Text style={styles.sectionLabel}>Scripture</Text>
           <Text style={styles.scriptureRef}>{devotional.scripture_reference}</Text>
           {devotional.scripture_text && (
-            <Text style={styles.scriptureText}>"{devotional.scripture_text}"</Text>
+            <Text style={styles.scriptureText}>
+              "{devotional.scripture_text.replace(new RegExp(`[\\s—–-]*${devotional.scripture_reference.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s"]*$`), '')}"
+            </Text>
           )}
         </View>
 
