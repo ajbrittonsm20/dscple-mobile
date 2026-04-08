@@ -64,22 +64,33 @@ export default function DonateScreen({ navigation }: any) {
       // Open Stripe Checkout in browser
       const result = await WebBrowser.openBrowserAsync(data.url);
 
-      // Record donation after checkout completes
       if (result.type === 'cancel' || result.type === 'dismiss') {
-        // User closed browser - may or may not have completed payment
+        // User closed browser without completing — record as pending
+        await supabase.from('donations').insert({
+          user_id: user?.id,
+          amount: parseFloat(amount),
+          cause,
+          donor_name: isAnonymous ? '' : donorName,
+          is_anonymous: isAnonymous,
+          message,
+          status: 'pending',
+        });
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        Alert.alert('Almost There!', 'If you completed payment in the browser, your donation is being processed. Thank you!');
+      } else {
+        await supabase.from('donations').insert({
+          user_id: user?.id,
+          amount: parseFloat(amount),
+          cause,
+          donor_name: isAnonymous ? '' : donorName,
+          is_anonymous: isAnonymous,
+          message,
+          status: 'succeeded',
+        });
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        Alert.alert('Thank You!', 'Your donation has been received. God bless you!');
       }
 
-      await supabase.from('donations').insert({
-        user_id: user?.id,
-        amount: parseFloat(amount),
-        cause,
-        donor_name: isAnonymous ? '' : donorName,
-        is_anonymous: isAnonymous,
-        message,
-      });
-
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Thank You!', 'Your donation has been received.');
       setAmount('');
       setCause('');
       setDonorName('');
