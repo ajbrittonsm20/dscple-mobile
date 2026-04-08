@@ -17,9 +17,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "",
-        "ascAppId": "",
-        "appleTeamId": ""
+        "appleId": "andrew@colab.so",
+        "ascAppId": "6761865025",
+        "appleTeamId": "19001023264"
       }
     }
   }
