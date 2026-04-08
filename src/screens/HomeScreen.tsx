@@ -87,9 +87,7 @@ export default function HomeScreen({ navigation }: any) {
             <View style={styles.verseCard}>
               <Text style={styles.verseLabel}>Verse of the Day</Text>
               <Text style={styles.verseText}>"{todaysDevotional.scripture_text}"</Text>
-              {!todaysDevotional.scripture_text?.includes(todaysDevotional.scripture_reference) && (
-                <Text style={styles.verseRef}>— {todaysDevotional.scripture_reference}</Text>
-              )}
+              <Text style={styles.verseRef}>— {todaysDevotional.scripture_reference}</Text>
             </View>
 
             {/* Past Readings */}
