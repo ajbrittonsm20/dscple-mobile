@@ -3,8 +3,8 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useStripe } from '@stripe/stripe-react-native';
 import * as Haptics from 'expo-haptics';
-import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../providers/AuthProvider';
 import { colors, fonts, spacing, borderRadius, fontSize } from '../lib/theme';
@@ -13,6 +13,7 @@ import { PRESET_AMOUNTS, causeConfig } from '../lib/constants';
 export default function DonateScreen({ navigation }: any) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [amount, setAmount] = useState('');
   const [cause, setCause] = useState('');
   const [donorName, setDonorName] = useState('');
@@ -32,7 +33,6 @@ export default function DonateScreen({ navigation }: any) {
 
   const totalRaised = donations.reduce((sum: number, d: any) => sum + (d.amount || 0), 0);
 
-  // Aggregate by cause
   const causeSummary = donations.reduce((acc: any, d: any) => {
     if (!acc[d.cause]) acc[d.cause] = { total: 0, count: 0 };
     acc[d.cause].total += d.amount || 0;
@@ -52,45 +52,54 @@ export default function DonateScreen({ navigation }: any) {
 
     setLoading(true);
     try {
-      // Call Supabase Edge Function to create Stripe Checkout session
+      // Get payment intent from edge function
       const { data, error } = await supabase.functions.invoke('create-payment-intent', {
         body: { amount: parseFloat(amount), cause },
       });
 
-      if (error || !data?.url) {
+      if (error || !data?.clientSecret) {
         throw new Error(data?.error || 'Failed to create payment');
       }
 
-      // Open Stripe Checkout in browser
-      const result = await WebBrowser.openBrowserAsync(data.url);
+      // Initialize the Payment Sheet
+      const { error: initError } = await initPaymentSheet({
+        paymentIntentClientSecret: data.clientSecret,
+        merchantDisplayName: 'DSCPLE',
+        customerId: data.customerId,
+        customerEphemeralKeySecret: data.ephemeralKey,
+        defaultBillingDetails: { name: donorName || undefined },
+        style: 'alwaysLight',
+      });
 
-      if (result.type === 'cancel' || result.type === 'dismiss') {
-        // User closed browser without completing — record as pending
-        await supabase.from('donations').insert({
-          user_id: user?.id,
-          amount: parseFloat(amount),
-          cause,
-          donor_name: isAnonymous ? '' : donorName,
-          is_anonymous: isAnonymous,
-          message,
-          status: 'pending',
-        });
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert('Almost There!', 'If you completed payment in the browser, your donation is being processed. Thank you!');
-      } else {
-        await supabase.from('donations').insert({
-          user_id: user?.id,
-          amount: parseFloat(amount),
-          cause,
-          donor_name: isAnonymous ? '' : donorName,
-          is_anonymous: isAnonymous,
-          message,
-          status: 'succeeded',
-        });
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert('Thank You!', 'Your donation has been received. God bless you!');
+      if (initError) {
+        throw new Error(initError.message);
       }
 
+      // Present the Payment Sheet
+      const { error: paymentError } = await presentPaymentSheet();
+
+      if (paymentError) {
+        if (paymentError.code === 'Canceled') {
+          // User cancelled — do nothing
+          setLoading(false);
+          return;
+        }
+        throw new Error(paymentError.message);
+      }
+
+      // Payment succeeded — record donation
+      await supabase.from('donations').insert({
+        user_id: user?.id,
+        amount: parseFloat(amount),
+        cause,
+        donor_name: isAnonymous ? '' : donorName,
+        is_anonymous: isAnonymous,
+        message,
+        status: 'succeeded',
+      });
+
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert('Thank You!', 'Your donation has been received. God bless you!');
       setAmount('');
       setCause('');
       setDonorName('');
@@ -283,7 +292,6 @@ const styles = StyleSheet.create({
   input: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: borderRadius.lg, paddingHorizontal: spacing.md, paddingVertical: 14, fontFamily: fonts.regular, fontSize: fontSize.base, color: colors.foreground, marginHorizontal: spacing.lg },
   donateButton: { flexDirection: 'row', backgroundColor: colors.foreground, borderRadius: borderRadius.xl, paddingVertical: 18, alignItems: 'center', justifyContent: 'center', marginHorizontal: spacing.lg, marginTop: spacing.lg },
   donateButtonText: { fontFamily: fonts.semibold, fontSize: fontSize.base, color: colors.background },
-  // Causes tab
   causeCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, marginHorizontal: spacing.lg, marginBottom: spacing.sm, borderRadius: borderRadius.lg, padding: spacing.md },
   causeCardInfo: { flex: 1, marginLeft: spacing.md },
   causeCardName: { fontFamily: fonts.semibold, fontSize: fontSize.base, color: colors.foreground },
