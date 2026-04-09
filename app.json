@@ -38,6 +38,13 @@
           "icon": "./assets/images/waves-icon.png",
           "color": "#8B6037"
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.dscple.app",
+          "enableGooglePay": false
+        }
       ]
     ]
   }
