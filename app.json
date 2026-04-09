@@ -17,7 +17,8 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.dscple.app",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "DSCPLE uses the camera to scan payment cards for donations."
       }
     },
     "android": {
