@@ -11,6 +11,49 @@ import { colors, fonts, spacing, borderRadius, fontSize } from '../lib/theme';
 import { categoryImages } from '../lib/constants';
 import DevotionalCard from '../components/DevotionalCard';
 
+// Daily verse - rotates based on the day of the year
+const DAILY_VERSES = [
+  { text: 'For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.', ref: 'Jeremiah 29:11' },
+  { text: 'Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.', ref: 'Proverbs 3:5-6' },
+  { text: 'I can do all this through him who gives me strength.', ref: 'Philippians 4:13' },
+  { text: 'The Lord is my shepherd, I lack nothing.', ref: 'Psalm 23:1' },
+  { text: 'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.', ref: 'Joshua 1:9' },
+  { text: 'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.', ref: 'Romans 8:28' },
+  { text: 'The Lord is my light and my salvation—whom shall I fear? The Lord is the stronghold of my life—of whom shall I be afraid?', ref: 'Psalm 27:1' },
+  { text: 'But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.', ref: 'Isaiah 40:31' },
+  { text: 'Cast all your anxiety on him because he cares for you.', ref: '1 Peter 5:7' },
+  { text: 'Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.', ref: 'Philippians 4:6' },
+  { text: 'Come to me, all you who are weary and burdened, and I will give you rest.', ref: 'Matthew 11:28' },
+  { text: 'The Lord your God is in your midst, a mighty one who will save; he will rejoice over you with gladness; he will quiet you by his love.', ref: 'Zephaniah 3:17' },
+  { text: 'Have I not commanded you? Be strong and courageous. Do not be frightened, and do not be dismayed, for the Lord your God is with you wherever you go.', ref: 'Joshua 1:9' },
+  { text: 'But the fruit of the Spirit is love, joy, peace, forbearance, kindness, goodness, faithfulness, gentleness and self-control.', ref: 'Galatians 5:22-23' },
+  { text: 'He heals the brokenhearted and binds up their wounds.', ref: 'Psalm 147:3' },
+  { text: 'So do not fear, for I am with you; do not be dismayed, for I am your God. I will strengthen you and help you.', ref: 'Isaiah 41:10' },
+  { text: 'Delight yourself in the Lord, and he will give you the desires of your heart.', ref: 'Psalm 37:4' },
+  { text: 'The name of the Lord is a fortified tower; the righteous run to it and are safe.', ref: 'Proverbs 18:10' },
+  { text: 'God is our refuge and strength, an ever-present help in trouble.', ref: 'Psalm 46:1' },
+  { text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.', ref: 'John 3:16' },
+  { text: 'The steadfast love of the Lord never ceases; his mercies never come to an end; they are new every morning; great is your faithfulness.', ref: 'Lamentations 3:22-23' },
+  { text: 'Be still, and know that I am God.', ref: 'Psalm 46:10' },
+  { text: 'If God is for us, who can be against us?', ref: 'Romans 8:31' },
+  { text: 'The Lord is close to the brokenhearted and saves those who are crushed in spirit.', ref: 'Psalm 34:18' },
+  { text: 'His grace is sufficient for you, for his power is made perfect in weakness.', ref: '2 Corinthians 12:9' },
+  { text: 'This is the day the Lord has made; let us rejoice and be glad in it.', ref: 'Psalm 118:24' },
+  { text: 'In their hearts humans plan their course, but the Lord establishes their steps.', ref: 'Proverbs 16:9' },
+  { text: 'The Lord will fight for you; you need only to be still.', ref: 'Exodus 14:14' },
+  { text: 'Love is patient, love is kind. It does not envy, it does not boast, it is not proud.', ref: '1 Corinthians 13:4' },
+  { text: 'Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid.', ref: 'John 14:27' },
+  { text: 'Create in me a pure heart, O God, and renew a steadfast spirit within me.', ref: 'Psalm 51:10' },
+];
+
+function getDailyVerse() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now.getTime() - start.getTime();
+  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+  return DAILY_VERSES[dayOfYear % DAILY_VERSES.length];
+}
+
 export default function HomeScreen({ navigation }: any) {
   const { profile } = useAuth();
 
@@ -84,11 +127,16 @@ export default function HomeScreen({ navigation }: any) {
             </TouchableOpacity>
 
             {/* Verse of the Day */}
-            <View style={styles.verseCard}>
-              <Text style={styles.verseLabel}>Verse of the Day</Text>
-              <Text style={styles.verseText}>"{todaysDevotional.scripture_text}"</Text>
-              <Text style={styles.verseRef}>— {todaysDevotional.scripture_reference}</Text>
-            </View>
+            {(() => {
+              const dailyVerse = getDailyVerse();
+              return (
+                <View style={styles.verseCard}>
+                  <Text style={styles.verseLabel}>Verse of the Day</Text>
+                  <Text style={styles.verseText}>"{dailyVerse.text}"</Text>
+                  <Text style={styles.verseRef}>— {dailyVerse.ref}</Text>
+                </View>
+              );
+            })()}
 
             {/* Past Readings */}
             <View style={styles.sectionHeader}>
