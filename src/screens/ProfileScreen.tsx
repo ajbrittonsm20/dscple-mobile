@@ -164,11 +164,11 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.menuCard}>
-          <TouchableOpacity style={styles.menuRow} onPress={() => Linking.openURL('https://dscple.com')}>
+          <TouchableOpacity style={styles.menuRow} onPress={() => Linking.openURL('https://dscple.us')}>
             <Ionicons name="globe-outline" size={20} color={colors.foreground} />
             <View style={styles.menuInfo}>
               <Text style={styles.menuLabel}>Visit Website</Text>
-              <Text style={styles.menuDesc}>dscple.com</Text>
+              <Text style={styles.menuDesc}>dscple.us</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.mutedForeground} />
           </TouchableOpacity>
