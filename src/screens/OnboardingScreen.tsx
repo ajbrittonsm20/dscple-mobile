@@ -8,11 +8,10 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../providers/AuthProvider';
 import { colors, fonts, spacing, borderRadius, fontSize } from '../lib/theme';
 
-const CAUSE_BREAKDOWN = [
-  { label: 'Missions', icon: 'globe-outline', pct: 40 },
-  { label: 'Community Outreach', icon: 'people-outline', pct: 25 },
-  { label: 'Youth Ministry', icon: 'heart-outline', pct: 20 },
-  { label: 'General Fund', icon: 'wallet-outline', pct: 15 },
+const CAUSES_WE_SUPPORT = [
+  { label: 'Global Missionaries', icon: 'globe-outline' },
+  { label: 'Without Permission Inc.', icon: 'people-outline' },
+  { label: 'Faith-Based Nonprofits', icon: 'heart-outline' },
 ];
 
 export default function OnboardingScreen() {
@@ -115,21 +114,19 @@ export default function OnboardingScreen() {
         </View>
       </View>
 
-      {monthlyAmount > 0 && (
-        <View style={styles.breakdownCard}>
-          <Text style={styles.breakdownTitle}>Where your giving goes</Text>
-          {CAUSE_BREAKDOWN.map((cause) => (
-            <View key={cause.label} style={styles.breakdownRow}>
-              <Ionicons name={cause.icon as any} size={18} color={colors.primary} />
-              <Text style={styles.breakdownLabel}>{cause.label}</Text>
-              <Text style={styles.breakdownAmount}>
-                ${Math.round(monthlyAmount * cause.pct / 100)}/mo
-              </Text>
-              <Text style={styles.breakdownPct}>{cause.pct}%</Text>
-            </View>
-          ))}
+      <View style={styles.breakdownCard}>
+        <Text style={styles.breakdownTitle}>Causes We Support</Text>
+        {CAUSES_WE_SUPPORT.map((cause) => (
+          <View key={cause.label} style={styles.breakdownRow}>
+            <Ionicons name={cause.icon as any} size={18} color={colors.primary} />
+            <Text style={styles.breakdownLabel}>{cause.label}</Text>
+          </View>
+        ))}
+        <View style={styles.allFundsRow}>
+          <Ionicons name="checkmark-circle" size={16} color={colors.primary} />
+          <Text style={styles.allFundsText}>All funds are donated directly to the mission field</Text>
         </View>
-      )}
+      </View>
     </ScrollView>,
 
     // Step 3: Welcome
@@ -207,8 +204,8 @@ const styles = StyleSheet.create({
   breakdownTitle: { fontFamily: fonts.semibold, fontSize: fontSize.sm, color: colors.foreground, marginBottom: spacing.md },
   breakdownRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
   breakdownLabel: { fontFamily: fonts.regular, fontSize: fontSize.sm, color: colors.foreground, flex: 1, marginLeft: spacing.sm },
-  breakdownAmount: { fontFamily: fonts.semibold, fontSize: fontSize.sm, color: colors.foreground, marginRight: spacing.sm },
-  breakdownPct: { fontFamily: fonts.regular, fontSize: fontSize.xs, color: colors.mutedForeground, width: 32, textAlign: 'right' },
+  allFundsRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.md, paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
+  allFundsText: { fontFamily: fonts.medium, fontSize: fontSize.sm, color: colors.primary, marginLeft: spacing.xs, flex: 1 },
   // Welcome
   centerContent: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   welcomeTitle: { fontFamily: fonts.bold, fontSize: fontSize['2xl'], color: colors.foreground, marginTop: spacing.lg },

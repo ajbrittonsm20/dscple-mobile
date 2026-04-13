@@ -19,7 +19,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
-// Home Stack
+// Home Stack (includes Profile as a push screen)
 const HomeStack = createNativeStackNavigator();
 function HomeStackScreen() {
   return (
@@ -27,6 +27,7 @@ function HomeStackScreen() {
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="DevotionalDetail" component={DevotionalDetailScreen} />
       <HomeStack.Screen name="Saved" component={SavedScreen} />
+      <HomeStack.Screen name="Profile" component={ProfileScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -69,8 +70,8 @@ const tabIcons: Record<string, { active: keyof typeof Ionicons.glyphMap; inactiv
   Home: { active: 'home', inactive: 'home-outline' },
   Devotionals: { active: 'book', inactive: 'book-outline' },
   Mission: { active: 'globe', inactive: 'globe-outline' },
+  Prayer: { active: 'chatbubble-ellipses', inactive: 'chatbubble-ellipses-outline' },
   Give: { active: 'heart', inactive: 'heart-outline' },
-  Profile: { active: 'person', inactive: 'person-outline' },
 };
 
 export default function MainTabNavigator() {
@@ -105,8 +106,8 @@ export default function MainTabNavigator() {
       <Tab.Screen name="Home" component={HomeStackScreen} />
       <Tab.Screen name="Devotionals" component={DevotionalsStackScreen} />
       <Tab.Screen name="Mission" component={MissionStackScreen} />
+      <Tab.Screen name="Prayer" component={PrayerRequestScreen} />
       <Tab.Screen name="Give" component={GiveStackScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }

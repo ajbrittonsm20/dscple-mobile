@@ -11,18 +11,24 @@ export default function ProfileScreen() {
   const { user, profile, signOut } = useAuth();
   const [loggingOut, setLoggingOut] = useState(false);
 
-  // Fetch user's subscription
+  // Fetch user's subscription (check subscriptions table first, fall back to profile's monthly_giving)
   const { data: subscription } = useQuery({
     queryKey: ['subscription', user?.id],
     queryFn: async () => {
       if (!user) return null;
+      // Check subscriptions table first
       const { data } = await supabase
         .from('subscriptions')
         .select('*')
         .eq('user_id', user.id)
         .eq('status', 'active')
         .maybeSingle();
-      return data;
+      if (data) return data;
+      // Fall back to profile monthly_giving field (set during onboarding/checkout)
+      if (profile?.monthly_giving && profile.monthly_giving > 0) {
+        return { amount: profile.monthly_giving, status: 'active' };
+      }
+      return null;
     },
   });
 
