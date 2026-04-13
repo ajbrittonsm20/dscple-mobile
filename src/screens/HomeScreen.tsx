@@ -85,7 +85,7 @@ export default function HomeScreen({ navigation }: any) {
             style={styles.headerLogo}
             contentFit="contain"
           />
-          <TouchableOpacity style={styles.avatar}>
+          <TouchableOpacity style={styles.avatar} onPress={() => navigation.getParent()?.navigate('Profile')}>
             <Text style={styles.avatarText}>{initials}</Text>
           </TouchableOpacity>
         </View>
