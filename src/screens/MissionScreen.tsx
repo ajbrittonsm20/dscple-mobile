@@ -24,7 +24,7 @@ export default function MissionScreen({ navigation }: any) {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.title}>Our Mission</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('DonateMain')}>
+          <TouchableOpacity onPress={() => navigation.getParent()?.navigate('Give')}>
             <Text style={styles.donateLink}>Donate</Text>
           </TouchableOpacity>
         </View>
